@@ -1,0 +1,23 @@
+<section>
+
+  <div class="allButFooter">
+    <ng-container *ngIf="notify$">
+      <section *ngIf="(notify$| async) as notify"
+               class="container mb-4 px-5 pt-2">
+
+        <pichincha-message-bar idElement="global-message"
+                               open="{{notify.open}}"
+                               variant="{{notify.variant}}"
+                               status="{{notify.status}}">
+          {{notify.text}}
+        </pichincha-message-bar>
+
+      </section>
+    </ng-container>
+
+    <router-outlet *ngIf="!isIframe"></router-outlet>
+  </div>
+
+
+</section>
+<external-assets></external-assets>

@@ -1,0 +1,9 @@
+.list-person:hover {
+  cursor: pointer;
+  background-color: rgb(238, 238, 238);
+}
+
+.dt-responsive{
+  //overflow-y: scroll;
+  max-height: calc(100vh - 400px);
+}

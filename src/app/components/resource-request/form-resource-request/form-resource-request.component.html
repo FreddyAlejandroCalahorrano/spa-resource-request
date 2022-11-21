@@ -1,0 +1,226 @@
+<div class="row no-gutters">
+  <section class="section-form container container-template d-flex justify-content-center">
+
+    <form id="resourceRequestForm"
+          *ngIf="resourceRequestFormGroup"
+          [formGroup]="resourceRequestFormGroup">
+
+      <!--#region title-->
+      <pichincha-typography class="mb-4 mt-3"
+                            variant="h4"
+                            color="blue"
+                            weight="normal"
+                            weight_color="500"
+                            align="inherit">
+        Solicitud de personas
+      </pichincha-typography>
+      <!--#endregion-->
+
+      <!--#region tribu-celula catalogs-->
+      <ng-container *ngIf="(tribuList$ | async) as tribus">
+
+        <!--#region Tribu -->
+        <div class="mb-3">
+          <app-p-select formControlName="tribuId"
+                        [items]="tribus"
+                        valueExpr="id"
+                        displayExpr="tribuName"
+                        [search]="true"
+                        [state]="isEdit ? 'disabled' : 'normal'"
+                        [errorHelper]="tribuId.touched && tribuId.invalid? 'La tribu es requerida' : ''"
+                        label="Seleccione una tribu *"
+          ></app-p-select>
+        </div>
+        <!--#endregion-->
+
+        <!--#region celula-->
+        <div class="mb-3">
+          <app-p-select formControlName="celulaId"
+                        [items]="celulaList"
+                        valueExpr="id"
+                        displayExpr="celulaNameProduct"
+                        [search]="true"
+                        [state]="isEdit ? 'disabled' : 'normal'"
+                        [errorHelper]="celulaId.touched && celulaId.invalid? 'La célula es requerida' : ''"
+                        label="Seleccione una célula *"
+          ></app-p-select>
+        </div>
+        <!--#endregion-->
+
+      </ng-container>
+      <!--#endregion-->
+
+      <!--#region profile-skills catalogs-->
+      <ng-container *ngIf="(profileList$ | async) as profileList">
+
+        <!--#region profile-->
+        <div class="mb-3">
+          <app-p-select-multiple [items]="profileList$ | async"
+                                 [search]="true"
+                                 [itemSelected]="resourceRequest?.profiles"
+                                 label="Perfiles *"
+                                 style="width: 220px;"
+                                 valueExpr="id"
+                                 displayExpr="nameProfile"
+                                 (changeSelect)="profiles.setValue($event)"
+                                 (openSelectContainer)="profiles.markAsTouched()"
+                                 [errorHelper]="profiles.touched && profiles.invalid? 'Los perfiles son requeridos' : ''"
+          ></app-p-select-multiple>
+        </div>
+        <!--#endregion-->
+
+        <!--#region skills-->
+        <div class="mb-3">
+          <app-p-select-multiple [items]="skillList"
+                                 [search]="true"
+                                 [itemSelected]="resourceRequest?.skills"
+                                 label="Conocimiento *"
+                                 style="width: 220px;"
+                                 valueExpr="id"
+                                 displayExpr="nameSkill"
+                                 (changeSelect)="skills.setValue($event)"
+                                 (openSelectContainer)="skills.markAsTouched()"
+                                 [errorHelper]="skills.touched && skills.invalid? 'El conocimiento es requerido' : ''"
+          ></app-p-select-multiple>
+        </div>
+        <!--#endregion-->
+
+      </ng-container>
+      <!--#endregion-->
+
+      <!--#region maximum entry date-->
+      <div class="mb-3">
+        <app-custom-input label="Fecha máxima de ingreso *"
+                          type="date"
+                          ngDefaultControl
+                          formControlName="maximumEntryDate"
+                          [fullWidth]="true"
+        ></app-custom-input>
+        <div *ngIf="maximumEntryDate?.invalid && (maximumEntryDate?.dirty || maximumEntryDate?.touched)">
+          <pichincha-typography
+            class="text-error"
+            *ngIf="!!maximumEntryDate?.errors?.['required']"
+            variant="tinyText"
+            color="error"
+            weight="normal"
+            weight_color="500"
+            align="inherit">
+            Fecha máxima de ingreso es requerida.
+          </pichincha-typography>
+          <pichincha-typography
+            class="text-error"
+            *ngIf="maximumEntryDate?.errors?.['maximumIncomeDateValid'] && !maximumEntryDate?.errors?.['required']"
+            variant="tinyText"
+            color="error"
+            weight="normal"
+            weight_color="500"
+            align="inherit">
+            Debe ingresar una fecha mayor o igual a la fecha actual más 15 días.
+          </pichincha-typography>
+        </div>
+      </div>
+      <!--#endregion-->
+
+      <!--#region applicant-->
+      <div class="mb-3">
+        <app-custom-input type="text"
+                          ngDefaultControl
+                          formControlName="applicant"
+                          placeholder="Buscar"
+                          label="Nombre del solicitante *"
+                          [showSearchButton]="true"
+                          [state]="personLogged?.idRoleAdmin === 1? 'normal':'disabled'"
+                          [errorHelper]="applicant.touched && applicant.invalid? 'El solicitante es requerido':''"
+                          (clickButton)="onSearchPerson()">
+        </app-custom-input>
+      </div>
+      <!--#endregion-->
+
+      <!--#region request type-->
+      <div class="mb-3">
+        <app-p-select formControlName="requestType"
+                      [items]="typeRequestList$ | async"
+                      valueExpr="id"
+                      displayExpr="type"
+                      [errorHelper]="$any(requestType.touched && requestType.invalid? 'Tipo de solicitud es requerida' : '')"
+                      label="Seleccione un tipo de solicitud *"
+        ></app-p-select>
+      </div>
+      <!--#endregion-->
+
+      <!--#region budget-->
+      <div class="mb-4">
+        <!--#region budget check-box-->
+        <pichincha-check-box (clickCheck)="onClickBudgetCheckbox()"
+                             disabled="false" id-element="1" value="1">
+          <pichincha-typography variant="bodyText">
+            ¿Tiene presupuesto?
+          </pichincha-typography>
+        </pichincha-check-box>
+        <!--#endregion-->
+
+        <!--#region budget file choose-->
+        <div *ngIf="!hasBudget.value" class="d-flex flex-nowrap gap-10 mt-4">
+          <button class="btn-pichincha md-secondary only-icon sz-small"
+                  (click)="fileInput.click()">
+            <pichincha-icon size="20px"
+                            color="black"
+                            weight_color="500"
+                            type="&#45;&#45;round">
+              upload
+            </pichincha-icon>
+            <input hidden
+                   formControlName="budget"
+                   #fileInput
+                   (change)="onFileInput($event)"
+                   type="file"
+                   accept="application/pdf">
+          </button>
+          <pichincha-typography variant="bodyText"
+                                color="blue"
+                                weight="normal"
+                                weight_color="500"
+                                align="inherit">
+            {{fileName}}
+          </pichincha-typography>
+        </div>
+        <div *ngIf="budget?.invalid && (budget?.dirty || budget?.touched)">
+          <pichincha-typography
+            class="text-error"
+            *ngIf="!!budget?.errors?.['required']"
+            variant="tinyText"
+            color="error"
+            weight="normal"
+            weight_color="500"
+            align="inherit">
+            Debe cargar un archivo tipo PDF con la aprobación.
+          </pichincha-typography>
+        </div>
+
+        <!--#endregion-->
+      </div>
+      <!--#endregion-->
+
+      <!--#region buttons-->
+      <div class="w-100 d-flex justify-content-end mb-3" style="margin-top: 20px; gap: 10px">
+        <pichincha-button style="width: 150px"
+                          size="large"
+                          color="secondary"
+                          (clickbutton)="onCancel()">
+          Cancelar
+        </pichincha-button>
+
+        <pichincha-button style="width: 150px"
+                          size="large"
+                          (clickbutton)="onSubmit()"
+                          color="primary"
+                          [disabled]="resourceRequestFormGroup.invalid">
+          Aceptar
+        </pichincha-button>
+      </div>
+      <!--#endregion-->
+
+    </form>
+
+  </section>
+</div>

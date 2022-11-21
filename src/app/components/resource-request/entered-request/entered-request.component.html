@@ -1,0 +1,96 @@
+<div class="row no-gutters justify-content-center">
+  <section class="container container-template">
+
+    <!--#region Table-->
+    <ng-container *ngIf="(resourceRequest$ | async) as dataTable; else elseError">
+
+      <div class="dt-responsive mb-3">
+        <table aria-describedby="resource-request-table" class="pichincha-table">
+          <thead>
+          <tr>
+            <th *ngFor="let column of columns"
+                class="pichincha-table-header">
+              <pichincha-typography variant="bodyText"
+                                    color="grey"
+                                    weight="bold"
+                                    weight_color="500"
+                                    align="inherit">
+                {{column.caption}}
+              </pichincha-typography>
+            </th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <pichincha-typography *ngIf="dataTable.length === 0; else totalElements"
+                                class="text-truncate ml-2 mt-3"
+                                variant="bodyText"
+                                color="blue"
+                                weight="normal"
+                                weight_color="500"
+                                align="inherit">
+            No hay solicitudes registradas
+          </pichincha-typography>
+          <ng-template #totalElements>
+            <tr *ngFor="let resourceRequest of dataTable" class="border-bottom">
+              <td>
+                {{resourceRequest.tribuName | uppercase}}
+              </td>
+              <td>
+                {{resourceRequest.celulaNameProduct | uppercase}}
+              </td>
+              <td>
+                {{resourceRequest.petitioner}}
+              </td>
+              <td>
+                {{resourceRequest.status}}
+              </td>
+              <td>
+                {{resourceRequest.typeRequest}}
+              </td>
+              <td>
+                {{resourceRequest.hasBudget ? 'Si' : 'No'}}
+              </td>
+              <td>
+                {{resourceRequest.priority}}
+              </td>
+              <td>
+                {{resourceRequest.maximumEntryDate}}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-10">
+                  <button class="btn-pichincha md-secondary only-icon sz-small"
+                          (click)="onActionClick(resourceRequest.id)">
+                    <pichincha-icon
+                      size="20px"
+                      color="black"
+                      weight_color="500"
+                      type="&#45;&#45;round">
+                      {{isEnteredRequestView ? viewOptions[0].icon : viewOptions[1].icon}}
+                    </pichincha-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          </tbody>
+        </table>
+      </div>
+
+    </ng-container>
+
+    <!--#endregion-->
+
+    <!--#region Else error table-->
+    <ng-template #elseError>
+      <div class="d-flex align-items-center justify-content-center mt-3">
+        <app-error
+          [controlSpiner]="!showSpinner">
+        </app-error>
+      </div>
+    </ng-template>
+    <!--#endregion-->
+
+  </section>
+</div>

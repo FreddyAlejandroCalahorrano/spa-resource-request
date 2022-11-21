@@ -1,0 +1,283 @@
+<div class="modal-header ">
+  <pichincha-typography
+    variant="h4"
+    color="blue"
+    weight="normal"
+    weight_color="500"
+    align="inherit"
+    class="modal-title w-100">
+    {{title}}
+  </pichincha-typography>
+  <button id="btn-close-entered-request-modal" type="button" class="close" aria-label="Close" (click)="close()">&times;
+  </button>
+</div>
+
+<form [formGroup]="resourceRequestFormGroup">
+  <div id="entered-request-modal-body"
+       class="modal-body scroll d-flex flex-column px-5"
+       style="height: 400px;">
+
+    <!--#region request information-->
+    <section>
+
+      <!--<pichincha-typography variant="h3"
+                            color="darkGrey"
+                            weight="normal"
+                            weight_color="500"
+                            align="inherit">
+        Información de Solicitud
+      </pichincha-typography>
+      <hr>-->
+
+      <!--#region tribu-->
+      <div class="row mb-3">
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Tribu
+          </pichincha-typography>
+
+          <pichincha-typography variant="smallText"
+                                color="black"
+                                class="label"
+                                weight="normal">
+            {{selectedRequest.celula.tribuName}}
+          </pichincha-typography>
+        </div>
+      </div>
+      <!--#endregion-->
+
+      <!--#region celula-->
+      <div class="row mb-3">
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Célula
+          </pichincha-typography>
+
+          <pichincha-typography variant="smallText"
+                                color="black"
+                                class="label"
+                                weight="normal">
+            {{selectedRequest.celula.celulaNameProduct}}
+          </pichincha-typography>
+        </div>
+      </div>
+      <!--#endregion-->
+
+      <!--#region applicant-->
+      <div class="row mb-3">
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Solicitante
+          </pichincha-typography>
+
+          <pichincha-typography variant="smallText"
+                                color="black"
+                                class="label"
+                                weight="normal">
+            {{selectedRequest.petitioner.name + ' ' + selectedRequest.petitioner.lastName}}
+          </pichincha-typography>
+        </div>
+      </div>
+      <!--#endregion-->
+
+      <!--#region profiles - skills-->
+      <div class="row mb-3">
+
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Perfiles
+          </pichincha-typography>
+          <pichincha-list variant="bullet"
+                          icon-color="darkGrey"
+                          icon-weight-color="500"
+                          color="black"
+                          weight-color="500"
+                          [data]="profileList"
+          >
+          </pichincha-list>
+        </div>
+
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Conocimiento
+          </pichincha-typography>
+
+          <pichincha-list variant="bullet"
+                          icon-color="darkGrey"
+                          icon-weight-color="500"
+                          color="black"
+                          weight-color="500"
+                          [data]="skillList"
+          >
+          </pichincha-list>
+        </div>
+
+      </div>
+      <!--#endregion-->
+
+      <!--#region maximum income date - request type-->
+      <div class="row mb-3">
+
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Fecha máxima de ingreso
+          </pichincha-typography>
+
+          <pichincha-typography variant="smallText"
+                                color="black"
+                                class="label"
+                                weight="normal">
+            {{selectedRequest.maximumEntryDate}}
+          </pichincha-typography>
+        </div>
+
+        <div class="col">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            Tipo de solicitud
+          </pichincha-typography>
+
+          <pichincha-typography variant="smallText"
+                                color="black"
+                                class="label"
+                                weight="normal">
+            {{selectedRequest.requestType.type}}
+          </pichincha-typography>
+        </div>
+
+      </div>
+      <!--#endregion-->
+
+      <!--#region budget-->
+      <div class="row mb-3">
+
+        <div class="col-6">
+          <pichincha-typography variant="smallText"
+                                color="darkGrey"
+                                class="label"
+                                weight="normal">
+            ¿Tiene presupuesto?
+          </pichincha-typography>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <pichincha-typography variant="smallText"
+                                  color="black"
+                                  class="label"
+                                  weight="normal">
+              {{ selectedRequest.hasBudget ? 'Si' : 'No' }}
+            </pichincha-typography>
+            <pichincha-button *ngIf="!selectedRequest.hasBudget"
+                              style="width: 150px"
+                              size="large"
+                              color="secondary">
+              <pichincha-icon class="mr-3"
+                              size="20px"
+                              color="black"
+                              weight_color="500"
+                              type="--round">
+                download
+              </pichincha-icon>
+              <pichincha-typography variant="smallText"
+                                    color="black"
+                                    class="label"
+                                    weight="normal">
+                Autorización
+              </pichincha-typography>
+            </pichincha-button>
+          </div>
+
+        </div>
+
+      </div>
+      <!--#endregion-->
+
+    </section>
+    <!--#endregion-->
+
+
+    <!--#region request form-->
+    <section>
+
+      <!--#region request status-->
+      <div class="mb-3">
+        <app-p-select formControlName="requestStatus"
+                      [items]="requestStatusList"
+                      valueExpr="id"
+                      displayExpr="status"
+                      [errorHelper]="$any(requestStatus.touched && requestStatus.invalid? 'El estado es requerido' : '')"
+                      label="Estado de solicitud *"
+        ></app-p-select>
+      </div>
+      <!--#endregion-->
+
+      <!--#region request priority-->
+      <div class="mb-3">
+        <app-p-select *ngIf="requestStatus.value ===  getIdByStatus('APROBADA')"
+                      formControlName="priority"
+                      [items]="requestPriorityList$ | async"
+                      valueExpr="value"
+                      displayExpr="value"
+                      [errorHelper]="$any(priority.touched && priority.invalid? 'La prioridad es requerida' : '')"
+                      label="Prioridad de solicitud *"
+        ></app-p-select>
+      </div>
+      <!--#endregion-->
+
+      <!--#region comments-->
+      <div class="mb-3">
+        <app-custom-input *ngIf="requestStatus.value ===  getIdByStatus('CANCELADA') || requestStatus.value ===  getIdByStatus('RECHAZADA')"
+                          label="Comentarios *"
+                          ngDefaultControl
+                          placeholder="Escriba un comentario"
+                          formControlName="comments"
+                          [fullWidth]="true"
+                          [errorHelper]="comments.touched && comments.invalid? 'Los comentarios son requeridos' : ''"
+        ></app-custom-input>
+      </div>
+      <!--#endregion-->
+
+    </section>
+    <!--#endregion-->
+
+  </div>
+
+  <div class="modal-footer">
+    <pichincha-button
+      style="width: 150px"
+      size="large"
+      color="secondary"
+      (clickbutton)="close()">
+      Cancelar
+    </pichincha-button>
+    <pichincha-button
+      [disabled]="resourceRequestFormGroup.invalid"
+      style="width: 150px"
+      type="submit"
+      size="large"
+      color="primary"
+      (clickbutton)="onSubmit()">
+      Aceptar
+    </pichincha-button>
+
+  </div>
+</form>

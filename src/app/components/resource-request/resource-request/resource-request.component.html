@@ -1,0 +1,192 @@
+<div class="row no-gutters justify-content-center">
+  <section class="container container-template">
+
+    <div class="col pb-2">
+      <!--#region Filters-->
+      <section [formGroup]="filters">
+        <!--#region Tribu-Celula Filters-->
+        <div class="row">
+          <div class="col">
+            <app-p-select-multiple [items]="tribus$ | async"
+                                   label="Tribu"
+                                   placeholder="Selecciona una tribu..."
+                                   valueExpr="id"
+                                   displayExpr="tribuName"
+                                   (changeSelect)="tribu.setValue($event)"
+                                   [search]="true"
+            ></app-p-select-multiple>
+
+          </div>
+          <div class="col">
+            <app-p-select-multiple [items]="celulas$ | async"
+                                   label="Célula"
+                                   valueExpr="id"
+                                   displayExpr="celulaNameProduct"
+                                   placeholder="Selecciona una célula..."
+                                   (changeSelect)="celula.setValue($event)"
+                                   [search]="true"
+            ></app-p-select-multiple>
+          </div>
+        </div>
+        <!--#endregion-->
+
+        <!--#region Status-Date Filters-->
+        <div class="row">
+          <div class="col">
+            <app-p-select-multiple [items]="status$ | async"
+                                   label="Estado"
+                                   valueExpr="id"
+                                   displayExpr="status"
+                                   placeholder="Selecciona una estado..."
+                                   (changeSelect)="status.setValue($event)"
+                                   [search]="true"
+            ></app-p-select-multiple>
+          </div>
+          <div class="col">
+            <pichincha-typography variant="smallText"
+                                  color="darkGrey"
+                                  weight="normal"
+                                  style="margin-bottom: 7px"
+                                  id="asigmentEndDateTypeDischargedPerson">
+              Fecha de solicitud
+            </pichincha-typography>
+            <div style="min-width: 195px">
+              <pichincha-input-datepicker
+                id="requestDateInputDatePickerDischargedPerson"
+                input_label="Fecha de solicitud"
+                input_placeholder="Ej: 2020-02-02"
+                (calendarSelect)="calendarSelectRequestDate($event)"
+                input_width="100%"
+                control-scroll-to-bottom="false"
+                range_mode="false">
+              </pichincha-input-datepicker>
+            </div>
+          </div>
+        </div>
+        <!--#endregion-->
+      </section>
+      <!--#endregion-->
+
+      <!--#region Request Button-->
+      <div class="row">
+        <div class="col d-flex align-items-center justify-content-end mt-2">
+          <pichincha-button size="large"
+                            id="button"
+                            color="primary"
+                            routerLink="crear">
+            <pichincha-icon class="mr-2"
+                            size="20px"
+                            color="error"
+                            weight_color="900"
+                            type="--outlined">
+              person_add
+            </pichincha-icon>
+            Solicitar un recurso
+          </pichincha-button>
+        </div>
+      </div>
+      <!--#endregion-->
+    </div>
+
+    <!--#region Table-->
+    <ng-container *ngIf="(resourceRequest$ | async) as dataTable; else elseError">
+
+      <div class="dt-responsive mt-3 mb-3">
+        <table aria-describedby="resource-request-table" class="pichincha-table">
+          <thead>
+          <tr>
+            <th *ngFor="let column of columns"
+                class="pichincha-table-header">
+              <pichincha-typography variant="bodyText"
+                                    color="grey"
+                                    weight="bold"
+                                    weight_color="500"
+                                    align="inherit">
+                {{column.caption}}
+              </pichincha-typography>
+            </th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <pichincha-typography *ngIf="dataTable.length === 0; else totalElements"
+                                class="text-truncate ml-2 mt-3"
+                                variant="bodyText"
+                                color="blue"
+                                weight="normal"
+                                weight_color="500"
+                                align="inherit">
+            No hay personas registradas
+          </pichincha-typography>
+          <ng-template #totalElements>
+            <tr *ngFor="let resourceRequest of dataTable" class="border-bottom">
+              <td>
+                {{resourceRequest.tribuName | uppercase}}
+              </td>
+              <td>
+                {{resourceRequest.celulaNameProduct | uppercase}}
+              </td>
+              <td>
+                {{resourceRequest.petitioner}}
+              </td>
+              <td>
+                {{resourceRequest.status}}
+              </td>
+              <td>
+                {{resourceRequest.typeRequest}}
+              </td>
+              <td>
+                {{resourceRequest.hasBudget ? 'Si' : 'No'}}
+              </td>
+              <td>
+                {{resourceRequest.priority}}
+              </td>
+              <td>
+                {{resourceRequest.maximumEntryDate}}
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-10">
+                  <button class="btn-pichincha md-secondary only-icon sz-small"
+                          routerLink="editar/{{resourceRequest.id}}">
+                    <pichincha-icon
+                      size="20px"
+                      color="black"
+                      weight_color="500"
+                      type="&#45;&#45;round">
+                      edit
+                    </pichincha-icon>
+                  </button>
+                  <button class="btn-pichincha md-secondary only-icon sz-small">
+                    <pichincha-icon
+                      size="20px"
+                      color="black"
+                      weight_color="500"
+                      type="&#45;&#45;round">
+                      delete
+                    </pichincha-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          </tbody>
+        </table>
+      </div>
+
+    </ng-container>
+
+    <!--#endregion-->
+
+    <!--#region Else error table-->
+    <ng-template #elseError>
+      <div class="d-flex align-items-center justify-content-center mt-3">
+        <app-error
+          [controlSpiner]="!showSpinner">
+        </app-error>
+      </div>
+    </ng-template>
+    <!--#endregion-->
+
+  </section>
+</div>
